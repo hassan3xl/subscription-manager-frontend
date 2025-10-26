@@ -5,19 +5,25 @@ import { apiService } from "@/lib/apiService";
 import { useParams } from "next/navigation";
 import SubsCard from "@/components/subscriptions/SubsCard";
 import Loader from "@/components/Loader";
-import { Subscription } from "@/lib/types";
+import { SubscriptionType } from "@/lib/types";
 
 const SubscriptionDetails = () => {
   const params = useParams();
-  const subscriptionId = params?.id as string;
+  const subscriptionId = params?.subscriptionId as string;
+  console.log(params);
 
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [subscription, setSubscription] = useState<SubscriptionType | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
 
   const fetchSubscription = async () => {
     try {
-      const response = await apiService.get(`subscriptions/${subscriptionId}`);
-      setSubscription(response.data.data);
+      setLoading(true);
+      console.log("Fetching:", `/subscriptions/${subscriptionId}`);
+      const response = await apiService.get(`/subscriptions/${subscriptionId}`);
+      console.log("Response:", response.data);
+      setSubscription(response.data);
     } catch (error) {
       console.error("Error fetching subscription:", error);
     } finally {
@@ -26,10 +32,11 @@ const SubscriptionDetails = () => {
   };
 
   useEffect(() => {
+    console.log("subscriptionId:", subscriptionId);
     if (subscriptionId) fetchSubscription();
   }, [subscriptionId]);
 
-  if (loading) return <Loader title="Loading subscription" />;
+  if (loading) return <Loader title="Loading subscription details" />;
 
   if (!subscription) {
     return (

@@ -2,17 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import { apiService } from "@/lib/apiService";
-import { CalendarDays, DollarSign, RefreshCw, Bell } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Subscription } from "@/lib/types";
+import { SubscriptionType } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import SubsCard from "@/components/subscriptions/SubsCard";
 import Link from "next/link";
 import Loader from "@/components/Loader";
 import SubscriptionsList from "@/components/subscriptions/SubscriptionList";
 
 const SubscriptionsPage = () => {
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [subscriptions, setSubscriptions] = useState<SubscriptionType[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -41,8 +38,8 @@ const SubscriptionsPage = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh]">
         <p className="text-secondary mb-4">No subscriptions found.</p>
-        <Link className="text-primary" href="/subscribe">
-          Add a Subscription
+        <Link className="text-primary" href="/subscriptions/subscribe">
+          Subscribe
         </Link>
       </div>
     );

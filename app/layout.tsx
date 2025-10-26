@@ -32,7 +32,8 @@ export default function RootLayout({
             <ToastProvider>
               <ModalProvider>
                 <Navbar />
-                <main className="my-20 px-4 sm:px-6 transition-colors duration-300">
+                <main className="p-4 min-h-screen sm:px-6 transition-colors duration-300">
+                  {" "}
                   {children}
                 </main>
                 <Footer />

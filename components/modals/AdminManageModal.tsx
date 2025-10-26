@@ -1,7 +1,14 @@
 "use client";
 import Link from "next/link";
 import React, { useEffect } from "react";
-import { X, Users, CreditCard, Settings, LayoutDashboard } from "lucide-react";
+import {
+  X,
+  Users,
+  CreditCard,
+  Settings,
+  LayoutDashboard,
+  ShoppingBag,
+} from "lucide-react";
 import { useModal } from "@/providers/ModalProvider";
 
 const AdminManageModal = () => {
@@ -39,6 +46,13 @@ const AdminManageModal = () => {
       icon: CreditCard,
       label: "Subscriptions",
       description: "Billing and plans",
+    },
+
+    {
+      href: "/admin/products",
+      icon: ShoppingBag,
+      label: "Products",
+      description: "Products and Categories",
     },
     {
       href: "/admin/settings",
@@ -124,7 +138,7 @@ const AdminManageModal = () => {
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t bg-muted/50">
+          <div className="hidden lg:block p-4 border-t bg-muted/50">
             <p className="text-xs text-muted-foreground text-center">
               Press{" "}
               <kbd className="px-2 py-1 bg-background border rounded text-xs">

@@ -10,12 +10,14 @@ import {
   X,
   AlertTriangle,
   Save,
+  Package,
 } from "lucide-react";
 import { apiService } from "@/lib/apiService";
 import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
 import { useToast } from "@/providers/ToastProvider";
+import Header from "@/components/Header";
 
 interface UserType {
   _id: string;
@@ -133,28 +135,51 @@ const AdminUsersPage = () => {
     return <Loader title="Loading users" />;
   }
 
+  const stats = [
+    {
+      title: "Total Users",
+      value: users.length,
+      icon: <Package className="w-6 h-6 text-blue-600" />,
+    },
+    {
+      title: "Active Users",
+      value: users.filter((u) => u.role === "user").length,
+      icon: <Package className="w-6 h-6 text-blue-600" />,
+    },
+    {
+      title: "Admins",
+      value: users.filter((u) => u.role === "admin").length,
+      icon: <Package className="w-6 h-6 text-blue-600" />,
+    },
+    {
+      title: "Subscribers",
+      value: users.filter((u) => u.role === "subscriber").length,
+      icon: <Package className="w-6 h-6 text-blue-600" />,
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-lg sm:text-xl md:text-4xl font-bold text-primary mb-2">
-            Users
-          </h1>
-          <p className="text-muted-foreground">Track and manage all users</p>
-        </div>
+        <Header
+          title="Users Management"
+          subtitle="Overview of all subscriptions"
+          // onRefresh={fetchDashboardData}
+          stats={stats}
+        />
 
         {/* Users Grid - Cards on larger screens */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {users.map((user) => (
             <div
               key={user._id}
-              className="bg-card rounded-xl p-6 hover:shadow-lg transition-all border border-border group"
+              className="bg-muted rounded-xl p-6 hover:shadow-lg transition-all border border-border group"
             >
               {/* User Avatar & Header */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground font-bold text-lg">
+                  <div className="w-12 h-12 rounded-full bg-accent from-primary to-primary/60 flex items-center justify-center text-primary-foreground font-bold text-lg">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
                   <div>

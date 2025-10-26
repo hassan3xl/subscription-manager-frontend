@@ -29,8 +29,9 @@ export function Navbar() {
     openModal(<UserManageModal />);
   };
   return (
-    <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg border-b border-border/40 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="sticky mb-4 top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/40 shadow-sm">
+      {" "}
+      <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex gap-4">
             {user?.role === "admin" ? (
@@ -40,12 +41,12 @@ export function Navbar() {
             )}
 
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="relative">
+              {/* <div className="relative">
                 <Sparkles className="h-6 w-6 text-primary group-hover:rotate-12 transition-transform duration-300" />
                 <div className="absolute inset-0 bg-primary/20 blur-xl group-hover:bg-primary/30 transition-colors" />
-              </div>
+              </div> */}
               <span className="text-xl font-bold bg-primary bg-clip-text text-transparent">
-                Subscription Manager
+                Sub Manager
               </span>
             </Link>
           </div>
@@ -92,7 +93,7 @@ export function Navbar() {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={signOut}
-                        className="cursor-pointer text-destructive focus:text-destructive flex items-center gap-2"
+                        className="cursor-pointer text-secondary focus:text-secondary flex items-center gap-2"
                       >
                         <LogOut className="h-4 w-4" />
                         Sign Out
@@ -136,7 +137,6 @@ export function Navbar() {
           </div>
         </div>
       </div>
-
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border/40 bg-background/95 backdrop-blur-lg animate-in slide-in-from-top-2 duration-200">
@@ -146,16 +146,14 @@ export function Navbar() {
                 {user ? (
                   <>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-accent/50">
-                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground font-semibold">
+                      <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center text-primary-foreground font-semibold">
                         {user.name?.charAt(0).toUpperCase() || "U"}
                       </div>
                       <div className="flex-1">
                         <p className="font-medium text-sm">
                           {user.name || "User"}
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          {user.email}
-                        </p>
+                        <p className="text-xs text-muted">{user.email}</p>
                       </div>
                     </div>
                     <Button className="w-full justify-start gap-2" asChild>
@@ -168,7 +166,7 @@ export function Navbar() {
                       </Link>
                     </Button>
                     <Button
-                      className="w-full justify-start gap-2 text-destructive hover:text-destructive"
+                      className="w-full justify-start gap-2"
                       onClick={() => {
                         signOut();
                         setMobileMenuOpen(false);

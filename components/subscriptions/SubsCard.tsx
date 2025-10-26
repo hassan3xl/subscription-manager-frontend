@@ -8,14 +8,14 @@ import {
   Search,
   Filter,
 } from "lucide-react";
-import { Subscription } from "@/lib/types";
+import { SubscriptionType } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 // Filter types
 
 interface SubscriptionProp {
-  subscription: Subscription;
+  subscription: SubscriptionType;
 }
 
 const SubsCard = ({ subscription }: SubscriptionProp) => {
@@ -26,9 +26,9 @@ const SubsCard = ({ subscription }: SubscriptionProp) => {
   };
 
   return (
-    <div className="bg-secondary border border-border rounded-2xl shadow-sm p-6 transition-all">
+    <div className="bg-muted border border-border rounded-2xl shadow-sm p-6 transition-all">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold ">{subscription.name}</h2>
+        <h2 className="text-xl font-semibold ">{subscription.product.name}</h2>
         <span
           className={`px-3 py-1 rounded-full text-xs font-medium ${
             subscription.status === "active"
@@ -46,7 +46,7 @@ const SubsCard = ({ subscription }: SubscriptionProp) => {
         <div className="flex items-center gap-2">
           <DollarSign className="w-4 h-4 text-gray-500" />
           <span className="font-medium">
-            {subscription.currency} {subscription.price} /{" "}
+            {subscription.currency} {subscription.priceAtSubscription} /{" "}
             {subscription.frequency}
           </span>
         </div>
@@ -70,7 +70,7 @@ const SubsCard = ({ subscription }: SubscriptionProp) => {
 
         <div className="flex items-center gap-2">
           <Bell className="w-4 h-4 text-gray-500" />
-          <span>Category: {subscription.category}</span>
+          <span>Category: {subscription.product.category.name}</span>
         </div>
       </div>
 

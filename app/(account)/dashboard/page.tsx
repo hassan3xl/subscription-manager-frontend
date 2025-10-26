@@ -1,40 +1,21 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Legend,
-  Tooltip,
-} from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { Calendar, TrendingUp, CreditCard, Package } from "lucide-react";
 import { apiService } from "@/lib/apiService";
 import Loader from "@/components/Loader";
-import { DashboardStats, Subscription } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {
-  categoryColors,
-  formatCurrency,
-  formatDate,
-  getDaysUntilRenewal,
-} from "@/lib/utils";
+import { formatCurrency, formatDate, getDaysUntilRenewal } from "@/lib/utils";
 import { useToast } from "@/providers/ToastProvider";
+import Header from "@/components/Header";
 
 const COLORS = ["#8b5cf6", "#ec4899", "#f59e0b"];
 
-type DashbaordDataType = {
-  stats: DashboardStats;
-  subscriptions: Subscription[];
-};
-
 const DashboardPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [dashboardData, setDashboardData] = useState<DashbaordDataType | null>(
-    null
-  );
+  const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
 
@@ -42,12 +23,11 @@ const DashboardPage = () => {
     try {
       setLoading(true);
       const response = await apiService.get("/dashboard");
-      console.log("res", response);
       setDashboardData(response);
     } catch (error: any) {
       addToast({
         title: "Error",
-        description: `${error.error}`,
+        description: `${error.error || "Failed to load dashboard"}`,
         type: "error",
         duration: 3000,
       });
@@ -64,16 +44,18 @@ const DashboardPage = () => {
     return <Loader title="Loading subscriptions..." />;
   }
 
+  // Pie chart data (category spending)
   const pieData =
     dashboardData?.stats?.categoryStats?.map((cat: any) => ({
-      name: cat.category.charAt(0).toUpperCase() + cat.category.slice(1),
+      name: cat.category?.name || "Uncategorized",
       value: cat.totalSpent,
       count: cat.count,
     })) || [];
 
+  // Filter subscriptions by category
   const filteredSubscriptions = selectedCategory
     ? dashboardData?.subscriptions.filter(
-        (sub) => sub.category === selectedCategory
+        (sub: any) => sub.product?.category?.name === selectedCategory
       )
     : dashboardData?.subscriptions;
 
@@ -84,74 +66,44 @@ const DashboardPage = () => {
             dashboardData.stats.totalSubscriptions
         )
       : 0;
+  const stats = [
+    {
+      title: "Total Subscriptions",
+      value: dashboardData?.stats.totalSubscriptions,
+      icon: <Package className="w-6 h-6" />,
+    },
+    {
+      title: "Active",
+      value: dashboardData?.stats.activeCount,
+      icon: <TrendingUp className="w-6 h-6" />,
+    },
+    {
+      title: "Total Spent",
+      value: formatCurrency(dashboardData?.stats.totalSpent ?? 0),
+      icon: <CreditCard className="w-6 h-6" />,
+    },
+    {
+      title: "Avg per Month",
+      value: formatCurrency(avgSpent),
+      icon: <Calendar className="w-6 h-6" />,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-lg sm:text-xl md:text-4xl font-bold text-primary mb-2">
-            Dashboard
-          </h1>
-          <p className="text-secondary">
-            Track and manage all your subscriptions
-          </p>
-        </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-muted backdrop-blur-lg rounded-2xl p-6 border border-border">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-accent rounded-xl">
-                <Package className="w-6 h-6 text-muted" />
-              </div>
-            </div>
-            <p className="text-secondary text-sm mb-1">Total Subscriptions</p>
-            <p className="text-3xl font-bold text-primary">
-              {dashboardData?.stats.totalSubscriptions}
-            </p>
-          </div>
+        <Header
+          title="Dashboard"
+          subtitle="Track and manage all your subscriptions"
+          // onRefresh={fetchDashboardData}
+          stats={stats}
+        />
 
-          <div className="bg-muted backdrop-blur-lg rounded-2xl p-6 border border-border">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-accent rounded-xl">
-                <TrendingUp className="w-6 h-6 text-secondary" />
-              </div>
-            </div>
-            <p className="text-secondary text-sm mb-1">Active</p>
-            <p className="text-3xl font-bold text-primary">
-              {dashboardData?.stats.activeCount}
-            </p>
-          </div>
-
-          <div className="bg-muted backdrop-blur-lg rounded-2xl p-6 border border-border">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-accent rounded-xl">
-                <CreditCard className="w-6 h-6 text-secondary" />
-              </div>
-            </div>
-            <p className="text-secondary text-sm mb-1">Total Spent</p>
-            <p className="text-3xl font-bold text-primary">
-              {formatCurrency(dashboardData?.stats?.totalSpent ?? 0)}{" "}
-            </p>
-          </div>
-
-          <div className="bg-muted backdrop-blur-lg rounded-2xl p-6 border border-border">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-accent rounded-xl">
-                <Calendar className="w-6 h-6 text-secondary" />
-              </div>
-            </div>
-            <p className="text-secondary text-sm mb-1">Avg per Month</p>
-            <p className="text-3xl font-bold text-primary">
-              {formatCurrency(avgSpent)}
-            </p>
-          </div>
-        </div>
-
-        {/* Chart and Categories */}
+        {/* Category chart */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="lg:col-span-1 bg-muted backdrop-blur-lg rounded-2xl p-6 border border-border">
+          <div className="bg-muted backdrop-blur-lg rounded-2xl p-6 border border-border">
             <h2 className="text-xl font-bold text-primary mb-6">
               Spending by Category
             </h2>
@@ -163,14 +115,10 @@ const DashboardPage = () => {
                   cy="50%"
                   innerRadius={60}
                   outerRadius={80}
-                  paddingAngle={5}
                   dataKey="value"
                 >
-                  {pieData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
+                  {pieData.map((index: any) => (
+                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip
@@ -186,73 +134,72 @@ const DashboardPage = () => {
             </ResponsiveContainer>
           </div>
 
-          <div className="lg:col-span-2 bg-secondary backdrop-blur-lg rounded-2xl p-6 border border-border">
+          {/* Category Breakdown */}
+          <div className="lg:col-span-2 bg-muted backdrop-blur-lg rounded-2xl p-6 border border-border">
             <h2 className="text-xl font-bold text-primary mb-6">
               Category Breakdown
             </h2>
             <div className="space-y-4">
-              {dashboardData?.stats.categoryStats.map((cat, idx) => (
-                <div
-                  key={cat.category}
-                  className={`p-4 rounded-xl cursor-pointer transition-all ${
-                    selectedCategory === cat.category
-                      ? "bg-white/20 border-2 border-white/40"
-                      : "bg-white/5 hover:bg-secondary border-2 border-transparent"
-                  }`}
-                  onClick={() =>
-                    setSelectedCategory(
-                      selectedCategory === cat.category ? null : cat.category
-                    )
-                  }
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: COLORS[idx] }}
-                      />
-                      <div>
-                        <p className="text-primary font-semibold capitalize">
-                          {cat.category}
+              {dashboardData?.stats.categoryStats.map(
+                (cat: any, idx: number) => (
+                  <div
+                    key={cat.category?.name || idx}
+                    className={`p-4 rounded-xl cursor-pointer transition-all ${
+                      selectedCategory === cat.category?.name
+                        ? "bg-white/20 border-2 border-white/40"
+                        : "bg-white/5 hover:bg-secondary border-2 border-transparent"
+                    }`}
+                    onClick={() =>
+                      setSelectedCategory(
+                        selectedCategory === cat.category?.name
+                          ? null
+                          : cat.category?.name
+                      )
+                    }
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: COLORS[idx] }}
+                        />
+                        <div>
+                          <p className="text-primary font-semibold capitalize">
+                            {cat.category?.name || "Uncategorized"}
+                          </p>
+                          <p className="text-secondary text-sm">
+                            {cat.count} subscription{cat.count > 1 ? "s" : ""}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-primary font-bold">
+                          {formatCurrency(cat.totalSpent)}
                         </p>
                         <p className="text-secondary text-sm">
-                          {cat.count} subscription{cat.count > 1 ? "s" : ""}
+                          {Math.round(
+                            (cat.totalSpent / dashboardData?.stats.totalSpent) *
+                              100
+                          )}
+                          %
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-primary font-bold">
-                        {formatCurrency(cat.totalSpent)}
-                      </p>
-                      <p className="text-secondary text-sm">
-                        {Math.round(
-                          (cat.totalSpent / dashboardData?.stats.totalSpent) *
-                            100
-                        )}
-                        %
-                      </p>
-                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </div>
         </div>
 
-        {/* Subscriptions List */}
+        {/* Subscriptions */}
         <div className="backdrop-blur-lg rounded-2xl p-6 border border-border">
           <div className="flex items-center justify-between mb-6">
-            <div className="flex justify-between">
-              <h2 className="text-xl font-bold text-primary">
-                {selectedCategory
-                  ? `${
-                      selectedCategory.charAt(0).toUpperCase() +
-                      selectedCategory.slice(1)
-                    } Subscriptions`
-                  : "Recent Subscriptions"}
-              </h2>
-              <div className="items-end"></div>
-            </div>
+            <h2 className="text-xl font-bold text-primary">
+              {selectedCategory
+                ? `${selectedCategory} Subscriptions`
+                : "Recent Subscriptions"}
+            </h2>
             <div className="space-x-2">
               {selectedCategory && (
                 <Button onClick={() => setSelectedCategory(null)}>
@@ -267,9 +214,13 @@ const DashboardPage = () => {
               </Link>
             </div>
           </div>
+
           <div className="space-y-4">
             {filteredSubscriptions?.slice(0, 5).map((sub: any) => {
+              const product = sub.product;
+              const category = product?.category?.name || "Uncategorized";
               const daysUntil = getDaysUntilRenewal(sub.renewalDate);
+
               return (
                 <div
                   key={sub._id}
@@ -277,21 +228,16 @@ const DashboardPage = () => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-primary text-lg"
-                        style={{
-                          backgroundColor: categoryColors[sub.category],
-                        }}
-                      >
-                        {sub.name.charAt(0)}
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-primary text-lg">
+                        {product?.name?.charAt(0)}
                       </div>
                       <div>
                         <h3 className="text-primary font-semibold text-lg">
-                          {sub.name}
+                          {product?.name}
                         </h3>
                         <div className="flex items-center gap-3 mt-1">
                           <span className="text-secondary text-sm capitalize">
-                            {sub.category}
+                            {category}
                           </span>
                           <span className="text-secondary text-sm">•</span>
                           <span className="text-secondary text-sm capitalize">
@@ -302,7 +248,7 @@ const DashboardPage = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-primary font-bold text-xl">
-                        {formatCurrency(sub.price)}
+                        {formatCurrency(product?.price)}
                       </p>
                       <p className="text-secondary text-sm mt-1">
                         Renews in {daysUntil} day{daysUntil !== 1 ? "s" : ""}
@@ -321,4 +267,5 @@ const DashboardPage = () => {
     </div>
   );
 };
+
 export default DashboardPage;

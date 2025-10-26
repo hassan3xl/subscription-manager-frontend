@@ -1,7 +1,48 @@
 // Base subscription type (shared between stats and subscriptions)
-export interface Subscription {
+
+// Category statistics type
+export interface CategoryStat {
+  count: number;
+  totalSpent: number;
+  category: string;
+}
+
+// Dashboard statistics type
+export interface DashboardStats {
+  totalSubscriptions: number;
+  activeCount: number;
+  cancelledCount: number;
+  expiredCount: number;
+  totalSpent: number;
+  categoryStats: CategoryStat[];
+  upcomingRenewals: SubscriptionType[];
+}
+
+// Main API response type
+export interface DashboardResponse {
+  success: boolean;
+  message: string;
+  stats: DashboardStats;
+  subscriptions: SubscriptionType[];
+}
+
+export type DashbaordDataType = {
+  stats: DashboardStats;
+};
+type CategoryType = {
   _id: string;
   name: string;
+};
+type ProductType = {
+  _id: string;
+  name: string;
+  price: number;
+  category: CategoryType;
+};
+export interface SubscriptionType {
+  _id: string;
+  priceAtSubscription: string;
+  product: ProductType;
   price: number;
   currency: string;
   frequency: string;
@@ -19,33 +60,3 @@ export interface Subscription {
   updatedAt: string;
   __v: number;
 }
-
-// Category statistics type
-export interface CategoryStat {
-  count: number;
-  totalSpent: number;
-  category: string;
-}
-
-// Dashboard statistics type
-export interface DashboardStats {
-  totalSubscriptions: number;
-  activeCount: number;
-  cancelledCount: number;
-  expiredCount: number;
-  totalSpent: number;
-  categoryStats: CategoryStat[];
-  upcomingRenewals: Subscription[];
-}
-
-// Main API response type
-export interface DashboardResponse {
-  success: boolean;
-  message: string;
-  stats: DashboardStats;
-  subscriptions: Subscription[];
-}
-
-export type DashbaordDataType = {
-  stats: DashboardStats;
-};

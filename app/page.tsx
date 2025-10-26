@@ -8,15 +8,17 @@ export default function Home() {
   const { user, signOut } = useAuth();
 
   return (
-    <main className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center px-4">
+    <main className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground overflow-hidden">
+      {" "}
       {/* Header */}
       <header className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-primary mb-2">SubsManager</h1>
-        <p className="text-secondary-foreground text-lg">
+        <h1 className="text-2xl sm:text-4xl font-bold text-primary mb-2">
+          SubsManager
+        </h1>
+        <p className="text-secondary-foreground text-md sm:text-lg">
           Track, manage, and stay in control of your subscriptions easily.
         </p>
       </header>
-
       {/* Features */}
       <section className="grid sm:grid-cols-3 gap-6 max-w-4xl w-full">
         <div className="p-6 rounded-2xl bg-secondary border border-border text-center">
@@ -40,7 +42,6 @@ export default function Home() {
           </p>
         </div>
       </section>
-
       {/* Call to action */}
       <div className="mt-12">
         {user ? (

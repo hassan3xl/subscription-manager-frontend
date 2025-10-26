@@ -12,36 +12,32 @@ import {
 import { apiService } from "@/lib/apiService";
 import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
-import {
-  formatCurrency,
-  formatDate,
-  getCategoryIcon,
-  getStatusColor,
-} from "@/lib/utils";
+import { formatCurrency, formatDate, getStatusColor } from "@/lib/utils";
 import { useToast } from "@/providers/ToastProvider";
 import DeleteSubscriptionModal from "@/components/modals/DeleteSubscriptionModal";
 import UpdateSubscriptionModal from "@/components/modals/UpdateSubscriptionModal";
-import { Subscription } from "@/lib/types";
+import { SubscriptionType } from "@/lib/types";
 import TestModal from "@/components/modals/TestModal";
+import Header from "@/components/Header";
 
 const AdminSubscriptionsPage = () => {
   const [loading, setLoading] = useState(true);
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [subscriptions, setSubscriptions] = useState<SubscriptionType[]>([]);
   const [editingSubscription, setEditingSubscription] =
-    useState<Subscription | null>(null);
+    useState<SubscriptionType | null>(null);
   const [deletingSubscription, setDeletingSubscription] =
-    useState<Subscription | null>(null);
+    useState<SubscriptionType | null>(null);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   // open modal functions
-  const openEditModal = (subscription: Subscription) => {
+  const openEditModal = (subscription: SubscriptionType) => {
     setEditingSubscription(subscription);
     setIsUpdateModalOpen(true);
   };
 
-  const openDeleteModal = (subscription: Subscription) => {
+  const openDeleteModal = (subscription: SubscriptionType) => {
     setDeletingSubscription(subscription);
     setIsDeleteModalOpen(true);
   };
@@ -117,37 +113,61 @@ const AdminSubscriptionsPage = () => {
   }, []);
 
   if (loading) return <Loader title="Loading subscriptions" />;
-
+  const stats = [
+    {
+      title: "Total Subscriptions",
+      value: subscriptions.length,
+      icon: <Package className="w-6 h-6 text-blue-600" />,
+    },
+    {
+      title: "Total Revenue",
+      value: formatCurrency(
+        subscriptions.reduce((total, subscription) => {
+          return total + subscription.price;
+        }, 0)
+      ),
+      icon: <CreditCard className="w-6 h-6 text-blue-600" />,
+    },
+    {
+      title: "Total Subscriptions",
+      value: subscriptions.length,
+      icon: <Package className="w-6 h-6 text-blue-600" />,
+    },
+    {
+      title: "Total Revenue",
+      value: formatCurrency(
+        subscriptions.reduce((total, subscription) => {
+          return total + subscription.price;
+        }, 0)
+      ),
+      icon: <CreditCard className="w-6 h-6 text-blue-600" />,
+    },
+  ];
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-lg sm:text-xl md:text-4xl font-bold text-primary mb-2">
-            Subscriptions
-          </h1>
-          <p className="text-muted-foreground">
-            Track and manage all subscriptions
-          </p>
-        </div>
+        <Header
+          title="Products and categories"
+          subtitle="Overview of products and categories."
+          // onRefresh={fetchDashboardData}
+          stats={stats}
+        />
 
         {/* Subscriptions Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {subscriptions.map((subscription) => (
             <div
               key={subscription._id}
-              className="bg-card rounded-xl p-6 hover:shadow-lg transition-all border border-border group"
+              className="bg-muted rounded-xl p-6 hover:shadow-lg transition-all border border-border group"
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="text-3xl">
-                    {getCategoryIcon(subscription.category)}
+                    {subscription.product.category.name}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg">
-                      {subscription.name}
-                    </h3>
                     <div className="flex items-center gap-2 mt-1">
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(

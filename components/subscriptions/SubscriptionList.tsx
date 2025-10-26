@@ -1,6 +1,6 @@
 "use client";
 
-import { Subscription } from "@/lib/types";
+import { SubscriptionType } from "@/lib/types";
 import { Filter, Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,7 @@ import SubsCard from "./SubsCard";
 import { Button } from "../ui/button";
 
 interface SubscriptionsListProps {
-  subscriptions: Subscription[];
+  subscriptions: SubscriptionType[];
 }
 
 type StatusFilter = "all" | "active" | "cancelled";
@@ -35,9 +35,9 @@ const SubscriptionsList = ({ subscriptions }: SubscriptionsListProps) => {
   const filteredSubscriptions = useMemo(() => {
     return subscriptions.filter((subscription) => {
       // Search filter
-      const matchesSearch = subscription.name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      // const matchesSearch = subscription.name
+      //   .toLowerCase()
+      //   .includes(searchTerm.toLowerCase());
 
       // Status filter
       const matchesStatus =
@@ -47,7 +47,7 @@ const SubscriptionsList = ({ subscriptions }: SubscriptionsListProps) => {
       const matchesCategory =
         categoryFilter === "all" || subscription.category === categoryFilter;
 
-      return matchesSearch && matchesStatus && matchesCategory;
+      return matchesStatus && matchesCategory;
     });
   }, [subscriptions, searchTerm, statusFilter, categoryFilter]);
 
@@ -67,8 +67,8 @@ const SubscriptionsList = ({ subscriptions }: SubscriptionsListProps) => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Your Subscriptions</h1>
-        <Link className="text-primary" href="/subscribe">
-          Add a Subscription
+        <Link className="text-primary" href="/subscriptions/subscribe">
+          Subscribe
         </Link>
       </div>
 

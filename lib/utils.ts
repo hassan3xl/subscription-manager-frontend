@@ -49,43 +49,10 @@ export const getStatusColor = (status: string) => {
   }
 };
 
-// export const getStatusIcon = (status: string) => {
-//   switch (status) {
-//     case "active":
-//       return <CheckCircle className="h-4 w-4" />;
-//     case "cancelled":
-//       return <XCircle className="h-4 w-4" />;
-//     case "paused":
-//       return <Clock className="h-4 w-4" />;
-//     default:
-//       return null;
-//   }
-// };
-
-export const categoryColors: Record<string, string> = {
-  music: "#8b5cf6",
-  news: "#ec4899",
-  movies: "#f59e0b",
-};
-
 export const getDaysUntilRenewal = (renewalDate: string) => {
   const today = new Date();
   const renewal = new Date(renewalDate);
   const diffTime = renewal.getTime() - today.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return diffDays;
-};
-export const getCategoryIcon = (category: string) => {
-  const icons: { [key: string]: any } = {
-    movies: "🎬",
-    music: "🎵",
-    gaming: "🎮",
-    productivity: "💼",
-    fitness: "💪",
-    education: "📚",
-    news: "📰",
-    cloud: "☁️",
-    other: "📦",
-  };
-  return icons[category.toLowerCase()] || "📦";
 };

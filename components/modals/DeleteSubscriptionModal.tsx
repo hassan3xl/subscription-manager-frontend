@@ -1,7 +1,7 @@
 import React from "react";
 import BaseModal from "./BaseModal";
 import { AlertTriangle, Trash2 } from "lucide-react";
-import { formatCurrency, getCategoryIcon, getStatusColor } from "@/lib/utils";
+import { formatCurrency, getStatusColor } from "@/lib/utils";
 import { Button } from "../ui/button";
 
 interface DeleteSubscriptionModalProps {
