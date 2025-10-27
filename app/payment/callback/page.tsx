@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { apiService } from "@/lib/apiService";
 
-const PaymentCallbackPage = () => {
+function PaymentCallbackContent() {
   const [status, setStatus] = useState<
     "verifying" | "success" | "failed" | "error"
   >("verifying");
@@ -26,12 +26,9 @@ const PaymentCallbackPage = () => {
           return;
         }
 
-        // Verify payment with your backend
         const response = await apiService.post(
           "/subscriptions/verify-payment",
-          {
-            reference: paymentReference,
-          }
+          { reference: paymentReference }
         );
 
         if (response.success) {
@@ -39,11 +36,7 @@ const PaymentCallbackPage = () => {
           setMessage(
             "Payment successful! Your subscription has been activated."
           );
-
-          // Redirect to subscriptions page after 3 seconds
-          setTimeout(() => {
-            router.push("/subscriptions");
-          }, 3000);
+          setTimeout(() => router.push("/subscriptions"), 3000);
         } else {
           setStatus("failed");
           setMessage(response.message || "Payment verification failed.");
@@ -146,6 +139,12 @@ const PaymentCallbackPage = () => {
       </div>
     </div>
   );
-};
+}
 
-export default PaymentCallbackPage;
+export default function PaymentCallbackPage() {
+  return (
+    <Suspense fallback={<div className="text-center p-10">Loading...</div>}>
+      <PaymentCallbackContent />
+    </Suspense>
+  );
+}
